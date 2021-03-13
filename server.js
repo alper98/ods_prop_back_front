@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
 const { default: axios } = require("axios");
+var cron = require("node-cron");
 
 require("dotenv").config();
 
@@ -13,6 +14,23 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 let fixtures = [];
 
+app.set("trust proxy", 1);
+
+const rateLimit = require("express-rate-limit");
+
+// Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
+// see https://expressjs.com/en/guide/behind-proxies.html
+// app.set('trust proxy', 1);
+
+const limiter = rateLimit({
+  windowMs: 30 * 1000, // 15 minutes
+  max: 2, // limit each IP to 100 requests per windowMs
+});
+
+//  apply to all requests
+app.use(limiter);
+
+// -----------------------------------------
 var todayDate = new Date();
 var today =
   todayDate.getFullYear() +
@@ -28,7 +46,14 @@ var nextWeek =
   "-" +
   String(todayDate.getDate() + 2).padStart(2, "0");
 
-app.get("/api/fixtures/all", async (req, res) => {
+let cacheData;
+let cacheTime;
+
+app.get("/api/fixtures/all", limiter, async (req, res, next) => {
+  if (cacheTime && cacheTime > Date.now() - 30 * 1000) {
+    return res.json(cacheData);
+  }
+
   res.header("Access-Control-Allow-Origin", "http://localhost:3000");
   res.header(
     "Access-Control-Allow-Headers",
@@ -36,20 +61,18 @@ app.get("/api/fixtures/all", async (req, res) => {
   );
 
   try {
-    await axios
-      .get(
-        "https://soccer.sportmonks.com/api/v2.0/fixtures/between/" +
-          today +
-          "/" +
-          nextWeek +
-          process.env.APITOKEN +
-          "&include=localTeam,visitorTeam,probability"
-      )
-      .then((response) => {
-        fixtures = response.data;
-        res.json(response.data);
-      })
-      .catch((err) => res.send(err));
+    const { data } = await axios.get(
+      "https://soccer.sportmonks.com/api/v2.0/fixtures/between/" +
+        today +
+        "/" +
+        nextWeek +
+        process.env.APITOKEN +
+        "&include=localTeam,visitorTeam,probability"
+    );
+    cacheData = data;
+    cacheTime = Date.now();
+    data.cacheTime = cacheTime;
+    res.json(data);
   } catch (err) {
     console.error("GG", err);
   }

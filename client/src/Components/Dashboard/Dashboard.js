@@ -46,6 +46,7 @@ export default function Dashboard({ today, nextWeek }) {
       .then((response) => {
         localStorage.setItem("allFixtures", JSON.stringify(response.data.data));
         setMatches(response.data.data);
+        console.log(response.data.data);
       });
   };
 

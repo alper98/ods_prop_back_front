@@ -28,9 +28,7 @@ const style = {
 export default function PredictionsModal(props) {
   const classes = useStyles();
 
-  useEffect(() => {
-    console.log(props.match);
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <Modal
