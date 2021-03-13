@@ -11,7 +11,7 @@ import {
   Typography,
 } from "@material-ui/core";
 
-import PredictionsModal from "../Dashboard/PredictionsModal";
+import PredictionsModal from "./PredictionsModal";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,8 +38,6 @@ export default function MatchBox({ match }) {
     String(todayDate.getMonth() + 1).padStart(2, "0") +
     "-" +
     String(todayDate.getDate()).padStart(2, "0");
-
-  useEffect(() => {}, []);
 
   return (
     <div>

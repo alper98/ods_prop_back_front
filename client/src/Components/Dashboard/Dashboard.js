@@ -4,7 +4,7 @@ import MatchBox from "../../Components/MatchBox/MatchBox";
 import { makeStyles, Grid } from "@material-ui/core";
 import { Button } from "react-bootstrap";
 
-import PredictionsModal from "./PredictionsModal";
+import PredictionsModal from "../../Components/MatchBox/PredictionsModal";
 
 const useStyles = makeStyles((theme) => ({
   root: {
