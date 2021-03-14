@@ -113,7 +113,7 @@ export default function PredictionsModal(props) {
         </Table>
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={props.match.onHide}>Luk</Button>
+        <Button onClick={props.onHide}>Luk</Button>
       </Modal.Footer>
     </Modal>
   );

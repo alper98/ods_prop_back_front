@@ -20,12 +20,6 @@ export default function Dashboard({ today, nextWeek }) {
   const [match, setMatch] = useState({});
 
   const [matches, setMatches] = useState([]);
-  const [fixtures, setFixtures] = useState([]);
-
-  let tempArrayMatches = [];
-  let tempMatchObject = {};
-
-  const api_token = process.env.REACT_APP_APITOKEN;
 
   useEffect(() => {
     const localStorageAllFixtures = JSON.parse(
@@ -41,13 +35,9 @@ export default function Dashboard({ today, nextWeek }) {
   }, []);
 
   const fetchFixtures = async () => {
-    await axios
-      .get("http://localhost:5000/api/fixtures/all")
-      .then((response) => {
-        localStorage.setItem("allFixtures", JSON.stringify(response.data.data));
-        setMatches(response.data.data);
-        console.log(response.data.data);
-      });
+    const { data } = await axios.get("http://localhost:5000/api/fixtures/all");
+    localStorage.setItem("allFixtures", JSON.stringify(data.data));
+    setMatches(data.data);
   };
 
   return (

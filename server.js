@@ -18,13 +18,9 @@ app.set("trust proxy", 1);
 
 const rateLimit = require("express-rate-limit");
 
-// Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
-// see https://expressjs.com/en/guide/behind-proxies.html
-// app.set('trust proxy', 1);
-
 const limiter = rateLimit({
-  windowMs: 30 * 1000, // 15 minutes
-  max: 2, // limit each IP to 100 requests per windowMs
+  windowMs: 30 * 500,
+  max: 10,
 });
 
 //  apply to all requests
@@ -42,9 +38,9 @@ var today =
 var nextWeek =
   todayDate.getFullYear() +
   "-" +
-  String(todayDate.getMonth() + 1).padStart(2, "0") +
+  String(todayDate.getMonth() + 6).padStart(2, "0") +
   "-" +
-  String(todayDate.getDate() + 2).padStart(2, "0");
+  String(todayDate.getDate()).padStart(2, "0");
 
 let cacheData;
 let cacheTime;
