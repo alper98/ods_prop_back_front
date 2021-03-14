@@ -17,6 +17,7 @@ let fixtures = [];
 app.set("trust proxy", 1);
 
 const rateLimit = require("express-rate-limit");
+const { json } = require("body-parser");
 
 const limiter = rateLimit({
   windowMs: 30 * 500,
@@ -61,18 +62,16 @@ app.get("/api/fixtures/all", limiter, async (req, res, next) => {
       "Access-Control-Allow-Headers",
       "Origin, X-Requested-With, Content-Type, Accept"
     );
-    client.get("cache/api/fixtures/all", async (err, fixtures) => {
+    client.get("fixtures", async (err, fixtures) => {
       if (err) throw err;
 
       if (fixtures) {
-        console.log("Cache response");
         res.status(200).send({
           data: JSON.parse(fixtures),
           message: "Fixtures from cache!",
           cacheTime: cacheTime,
         });
       } else {
-        console.log("NOT Cache response");
         const { data } = await axios.get(
           "https://soccer.sportmonks.com/api/v2.0/fixtures/between/" +
             today +
@@ -81,14 +80,15 @@ app.get("/api/fixtures/all", limiter, async (req, res, next) => {
             process.env.APITOKEN +
             "&include=localTeam,visitorTeam,probability"
         );
-        client.setex("cache/api/fixtures/all", 0.000001, JSON.stringify(data));
+        console.log(data);
+        client.set("fixtures", JSON.stringify(data));
 
         cacheData = data;
         cacheTime = Date.now();
 
         data.cacheTime = cacheTime;
         res.status(200).send({
-          fixtures: fixtures.data,
+          data: data,
           message: "Not from cache",
         });
       }
