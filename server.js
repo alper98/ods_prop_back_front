@@ -2,7 +2,7 @@ const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
 const { default: axios } = require("axios");
-var cron = require("node-cron");
+const redis = require("redis");
 
 require("dotenv").config();
 
@@ -44,6 +44,14 @@ var nextWeek =
 
 let cacheData;
 let cacheTime;
+
+const redisPort = 6379;
+const client = redis.createClient(redisPort);
+
+//log error to the console if any occurs
+client.on("error", (err) => {
+  console.log(err);
+});
 
 // TODO: Add speedlimiter
 app.get("/api/fixtures/all", limiter, async (req, res, next) => {
