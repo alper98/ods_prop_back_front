@@ -9,27 +9,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Dashboard({ today, nextWeek }) {
+export default function Dashboard() {
   const classes = useStyles();
   const [matches, setMatches] = useState([]);
 
   useEffect(() => {
-    const localStorageAllFixtures = JSON.parse(
-      localStorage.getItem("allFixtures")
-    );
-    if (localStorageAllFixtures) {
-      console.log("Hentede informationer fra localstorage");
-      setMatches(localStorageAllFixtures);
-    } else {
-      console.log("En af listerne var tomme, henter igen.");
-      fetchFixtures();
-    }
+    fetchFixtures();
   }, []);
 
   const fetchFixtures = async () => {
     const { data } = await axios.get("http://localhost:5000/api/fixtures/all");
-    localStorage.setItem("allFixtures", JSON.stringify(data.data));
-    setMatches(data.data);
+    console.log(data);
+
+    setMatches(data.data.data);
   };
 
   return (

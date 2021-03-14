@@ -55,31 +55,44 @@ client.on("error", (err) => {
 
 // TODO: Add speedlimiter
 app.get("/api/fixtures/all", limiter, async (req, res, next) => {
-  console.log(cacheTime);
-  if (cacheTime && cacheTime > Date.now() - 30 * 1000) {
-    res.set("Cache-control", "public, max-age=300");
-    return res.json(cacheData);
-  }
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
   try {
-    const { data } = await axios.get(
-      "https://soccer.sportmonks.com/api/v2.0/fixtures/between/" +
-        today +
-        "/" +
-        nextWeek +
-        process.env.APITOKEN +
-        "&include=localTeam,visitorTeam,probability"
+    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
     );
-    cacheData = data;
-    cacheTime = Date.now();
+    client.get("cache/api/fixtures/all", async (err, fixtures) => {
+      if (err) throw err;
 
-    data.cacheTime = cacheTime;
-    res.set("Cache-control", "public, max-age=300");
-    res.json(data);
+      if (fixtures) {
+        console.log("Cache response");
+        res.status(200).send({
+          data: JSON.parse(fixtures),
+          message: "Fixtures from cache!",
+          cacheTime: cacheTime,
+        });
+      } else {
+        console.log("NOT Cache response");
+        const { data } = await axios.get(
+          "https://soccer.sportmonks.com/api/v2.0/fixtures/between/" +
+            today +
+            "/" +
+            nextWeek +
+            process.env.APITOKEN +
+            "&include=localTeam,visitorTeam,probability"
+        );
+        client.setex("cache/api/fixtures/all", 0.000001, JSON.stringify(data));
+
+        cacheData = data;
+        cacheTime = Date.now();
+
+        data.cacheTime = cacheTime;
+        res.status(200).send({
+          fixtures: fixtures.data,
+          message: "Not from cache",
+        });
+      }
+    });
   } catch (err) {
     console.error("GG", err);
   }
