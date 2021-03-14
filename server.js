@@ -45,17 +45,18 @@ var nextWeek =
 let cacheData;
 let cacheTime;
 
+// TODO: Add speedlimiter
 app.get("/api/fixtures/all", limiter, async (req, res, next) => {
+  console.log(cacheTime);
   if (cacheTime && cacheTime > Date.now() - 30 * 1000) {
+    res.set("Cache-control", "public, max-age=300");
     return res.json(cacheData);
   }
-
   res.header("Access-Control-Allow-Origin", "http://localhost:3000");
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
   );
-
   try {
     const { data } = await axios.get(
       "https://soccer.sportmonks.com/api/v2.0/fixtures/between/" +
@@ -67,7 +68,9 @@ app.get("/api/fixtures/all", limiter, async (req, res, next) => {
     );
     cacheData = data;
     cacheTime = Date.now();
+
     data.cacheTime = cacheTime;
+    res.set("Cache-control", "public, max-age=300");
     res.json(data);
   } catch (err) {
     console.error("GG", err);
