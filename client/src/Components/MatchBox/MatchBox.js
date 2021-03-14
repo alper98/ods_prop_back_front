@@ -69,10 +69,11 @@ export default function MatchBox({ match }) {
               </Typography>
               <Typography variant="body2" color="textSecondary" component="div">
                 <div className={classes.title} color="textSecondary">
-                  Kickoff: {match.time.starting_at.time}
+                  Kickoff: Kl. {match.time.starting_at.time.substring(0, 5)}
                 </div>
                 <div className={classes.title} color="textSecondary">
-                  Dato: {match.time.starting_at.date}
+                  Dato:{" "}
+                  {match.time.starting_at.date.split("-").reverse().join("-")}
                 </div>
               </Typography>
             </CardContent>
