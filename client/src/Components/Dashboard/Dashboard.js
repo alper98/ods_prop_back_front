@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import MatchBox from "../../Components/MatchBox/MatchBox";
-import { makeStyles, Grid } from "@material-ui/core";
+import { makeStyles, Grid, Button } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,6 +26,7 @@ export default function Dashboard() {
 
   return (
     <div className={classes.root}>
+      <button>Live</button>
       <Grid container spacing={1}>
         {matches.map((match, index) => {
           if (match.id) {

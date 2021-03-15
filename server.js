@@ -82,6 +82,7 @@ app.get("/api/fixtures/all", limiter, async (req, res, next) => {
         );
         console.log(data);
         client.set("fixtures", JSON.stringify(data));
+        client.expire("fixtures", 300);
 
         cacheData = data;
         cacheTime = Date.now();

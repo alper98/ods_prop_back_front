@@ -11,6 +11,8 @@ import {
   Typography,
 } from "@material-ui/core";
 
+import { spacing } from "@material-ui/system";
+
 import PredictionsModal from "./PredictionsModal";
 
 const useStyles = makeStyles((theme) => ({
@@ -47,7 +49,9 @@ export default function MatchBox({ match }) {
             <CardContent>
               <Typography variant="body2" color="textSecondary" component="div">
                 {today == match.time.starting_at.date ? (
-                  <h5>Spilles idag!</h5>
+                  <Button variant="contained" color="primary">
+                    IDAG
+                  </Button>
                 ) : (
                   <h5>Snart!</h5>
                 )}
